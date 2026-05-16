@@ -3,7 +3,7 @@
 import re
 import json
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Any, Union
 
 import httpx
 
@@ -51,7 +51,7 @@ def build_messages(
     sees the full dialogue context, not just a flattened text block.
     Supports text-only and multimodal (text + images) inputs.
     """
-    messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+    messages: list[dict[str, Any]] = [{"role": "system", "content": SYSTEM_PROMPT}]
 
     # Inject conversation history as message objects
     if conversation_history:

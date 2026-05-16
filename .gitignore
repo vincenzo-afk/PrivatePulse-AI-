@@ -17,8 +17,10 @@ dist/
 .env.local
 
 # Uploads & data
-uploads/
-data/chroma_db/
+**/uploads/
+**/data/
+**/*.db
+**/*.sqlite3
 
 # OS
 .DS_Store

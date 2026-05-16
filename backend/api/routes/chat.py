@@ -4,11 +4,11 @@ Supports optional image uploads for multimodal (vision) queries via Groq."""
 import json
 import base64
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Form, File, UploadFile, Request
-from sqlmodel import Session as DBSession
+from sqlmodel import Session as DBSession, select
 from models.database import get_session
 from models.session import UserSession
 from models.document import Document
@@ -90,7 +90,7 @@ async def chat_query(
     session = db.get(UserSession, session_id)
     if session:
         session.query_count += 1
-        session.last_active_at = datetime.utcnow()
+        session.last_active_at = datetime.now(timezone.utc)
         db.commit()
 
     # Retrieve relevant chunks
@@ -226,10 +226,10 @@ async def get_suggested_questions(
     db: DBSession = Depends(get_session),
 ):
     """Get suggested questions based on the user's documents."""
-    docs = db.query(Document).filter(
+    docs = db.exec(select(Document).where(
         Document.session_id == session_id,
         Document.status == "ready",
-    ).all()
+    )).all()
 
     if not docs:
         return SuggestedQuestionsResponse(questions=[])

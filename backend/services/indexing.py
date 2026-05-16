@@ -3,14 +3,14 @@
 import chromadb
 from config import settings
 from core.logging import get_logger
-from typing import Optional
+from typing import Optional, Any
 
 logger = get_logger(__name__)
 
-_client: Optional[chromadb.Client] = None
+_client: Optional[Any] = None
 
 
-def get_client() -> chromadb.Client:
+def get_client() -> Any:
     """Get or create the ChromaDB client."""
     global _client
     if _client is None:
@@ -87,10 +87,11 @@ def get_chunks_by_document_id(session_id: str, document_id: str) -> list[dict]:
         where={"document_id": document_id},
         include=["metadatas", "documents"],
     )
+    metadatas = results.get("metadatas") or []
     return [
         {
             "id": results["ids"][i],
-            "metadata": results["metadatas"][i],
+            "metadata": metadatas[i] if i < len(metadatas) else {},
         }
         for i in range(len(results["ids"]))
     ]
