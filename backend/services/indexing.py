@@ -58,8 +58,8 @@ def add_chunks(
 
     collection.add(
         ids=ids,
-        embeddings=embeddings,
-        metadatas=metadatas,
+        embeddings=embeddings,  # type: ignore
+        metadatas=metadatas,  # type: ignore
     )
 
     logger.info("chunks_indexed", count=len(chunks), session_id=session_id)

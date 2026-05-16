@@ -73,7 +73,7 @@ def build_messages(
         excerpts_text = "\n\n".join(excerpts_parts)
 
     # Build user content (supports text + images for vision)
-    user_content_parts = []
+    user_content_parts: list[dict[str, Any]] = []
 
     if excerpts_text:
         user_content_text = (
