@@ -1,0 +1,85 @@
+PATIENT MEDICAL REPORT
+========================
+
+PATIENT INFORMATION
+------------------
+Name: Alex Johnson
+DOB: 05/15/1987
+SSN: 423-56-7890
+Patient ID: PT-2024-00421
+Date of Report: March 12, 2024
+Primary Physician: Dr. Sarah Chen
+
+CHIEF COMPLAINT
+---------------
+Patient presents with persistent fatigue, increased thirst, and frequent urination over the past 3 months. Also reports blurry vision and slow-healing cuts on hands.
+
+MEDICAL HISTORY
+---------------
+- Type 2 Diabetes (newly diagnosed)
+- Hypertension (diagnosed 2019)
+- High cholesterol (diagnosed 2020)
+- No known drug allergies
+- Family history: Mother has Type 2 Diabetes, Father has hypertension
+
+VITAL SIGNS
+-----------
+- Blood Pressure: 138/85 mmHg
+- Heart Rate: 72 bpm
+- Temperature: 98.6°F
+- Weight: 215 lbs (BMI: 32.1)
+- Height: 5'10"
+
+LAB RESULTS
+-----------
+Test                          Result        Reference Range      Status
+Hemoglobin A1c                8.2%          4.0-5.6%            HIGH
+Fasting Blood Glucose         168 mg/dL     70-100 mg/dL        HIGH
+Total Cholesterol             240 mg/dL     <200 mg/dL          HIGH
+LDL Cholesterol               160 mg/dL     <100 mg/dL          HIGH
+HDL Cholesterol               38 mg/dL      >40 mg/dL           LOW
+Triglycerides                 200 mg/dL     <150 mg/dL          HIGH
+Creatinine                    0.9 mg/dL     0.6-1.2 mg/dL       Normal
+eGFR                          92             >60                 Normal
+Urine Microalbumin            35 mg/g       <30 mg/g            HIGH
+
+DIAGNOSIS
+---------
+1. Type 2 Diabetes Mellitus (new onset) - ICD-10: E11.9
+2. Essential Hypertension - ICD-10: I10
+3. Mixed Hyperlipidemia - ICD-10: E78.2
+4. Obesity (Class 1) - ICD-10: E66.9
+
+MEDICATION PLAN
+---------------
+1. Metformin HCl 500mg - Take one tablet twice daily with meals
+2. Lisinopril 10mg - Take one tablet once daily
+3. Atorvastatin 20mg - Take one tablet once daily at bedtime
+4. Aspirin 81mg - Take one tablet once daily
+
+TREATMENT PLAN & RECOMMENDATIONS
+---------------------------------
+1. Initiate metformin therapy as prescribed above
+2. Dietary counseling: Refer to nutritionist for diabetic meal planning
+3. Exercise: Minimum 30 minutes of moderate activity 5 days per week
+4. Blood glucose monitoring: Check fasting glucose daily, log results
+5. Target HbA1c: Less than 7.0% in 3 months
+6. Foot examination: Daily self-exam for cuts, blisters, or sores
+7. Eye examination: Schedule dilated eye exam within 1 month
+8. Smoking cessation: Patient reports smoking 1/2 pack per day - recommend cessation program
+
+FOLLOW-UP SCHEDULE
+------------------
+- Next appointment: June 12, 2024 (3 months)
+- Lab recheck: HbA1c, lipid panel, renal function
+- Referral to endocrinologist if HbA1c remains elevated at next visit
+
+PHYSICIAN NOTES
+---------------
+Patient is motivated to make lifestyle changes. Discussed diabetes education program. Patient will enroll in the 8-week diabetes management workshop starting next month. Recommended reducing carbohydrate intake and increasing physical activity. Patient understands the importance of medication adherence. Follow up in 3 months to reassess glycemic control and adjust medications as needed.
+
+Prescription refills authorized for 90 days. Patient instructed to call if experiencing any adverse effects from medications.
+
+Signed: Dr. Sarah Chen, MD
+Internal Medicine
+License: MD-78945

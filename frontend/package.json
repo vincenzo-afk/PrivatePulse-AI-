@@ -1,0 +1,39 @@
+{
+  "name": "privatepulse-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.2.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "geist": "^1.3.0",
+    "lucide-react": "^0.379.0",
+    "zustand": "^4.5.2",
+    "@tanstack/react-query": "^5.40.0",
+    "axios": "^1.7.2",
+    "react-dropzone": "^14.2.3",
+    "framer-motion": "^11.1.7",
+    "sonner": "^1.4.41",
+    "react-hook-form": "^7.51.0",
+    "@hookform/resolvers": "^3.6.0",
+    "zod": "^3.23.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.3.0",
+    "class-variance-authority": "^0.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.0"
+  }
+}

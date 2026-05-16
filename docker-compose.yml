@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./privatepulse.db
+      - UPLOAD_DIR=./uploads
+      - CHROMA_PERSIST_DIR=./data/chroma_db
+      - CORS_ORIGINS=http://localhost:3000
+    volumes:
+      - backend_data:/app/data
+      - backend_uploads:/app/uploads
+    env_file:
+      - .env
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend
+
+volumes:
+  backend_data:
+  backend_uploads:

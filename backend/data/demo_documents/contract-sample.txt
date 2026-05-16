@@ -1,0 +1,102 @@
+SERVICE AGREEMENT
+==================
+
+This Service Agreement (the "Agreement") is entered into on January 15, 2024, by and between:
+
+CloudMatrix Technologies Inc., a Delaware corporation with its principal place of business at 200 Innovation Drive, San Francisco, CA 94105 ("Provider")
+
+and
+
+DataStream Logistics LLC, a Texas limited liability company with its principal place of business at 4500 Commerce Boulevard, Dallas, TX 75201 ("Client")
+
+Contact Email: legal@datastreamlogistics.com
+Account Number: DS-7721-LLC
+
+1. SERVICES
+-----------
+Provider agrees to provide the following services to Client:
+a) Cloud infrastructure management and monitoring
+b) Data analytics platform hosting and maintenance
+c) 24/7 technical support with 2-hour response time
+d) Monthly security audits and compliance reporting
+e) Data backup and disaster recovery services
+
+2. TERM
+-------
+This Agreement shall commence on February 1, 2024 and continue for a period of twelve (12) months (the "Initial Term"). Thereafter, this Agreement shall automatically renew for successive twelve (12) month periods unless either party provides written notice of non-renewal at least sixty (60) days prior to the end of the then-current term.
+
+3. PAYMENT TERMS
+----------------
+a) Monthly Service Fee: $24,500 per month for the Initial Term.
+b) Payment Schedule: Invoiced on the first day of each month. Payment is due within thirty (30) days of invoice date.
+c) Late Payment: Any amount not paid when due shall accrue interest at the rate of 1.5% per month (18% per annum) on the outstanding balance.
+d) Price Adjustment: Provider may increase the Monthly Service Fee by up to 5% annually upon sixty (60) days written notice.
+e) Setup Fee: One-time implementation fee of $12,000, invoiced upon execution of this Agreement.
+f) Payment Method: Electronic funds transfer to Provider's designated account.
+
+4. CONFIDENTIALITY
+------------------
+a) Both parties agree to maintain strict confidentiality of all proprietary information disclosed during the term of this Agreement.
+b) Confidential information includes but is not limited to: business strategies, financial data, customer lists, technical specifications, trade secrets, and any other information designated as confidential.
+c) The receiving party shall use at least the same degree of care to protect the confidential information as it uses to protect its own confidential information, but in no event less than reasonable care.
+d) This confidentiality obligation shall survive termination of this Agreement for a period of five (5) years.
+e) Upon request, each party shall return or destroy all confidential information of the disclosing party.
+
+5. INTELLECTUAL PROPERTY
+------------------------
+a) Provider retains all intellectual property rights in its platform, tools, and methodologies.
+b) Client retains all intellectual property rights in its data and business information.
+c) Any deliverables specifically created for Client under this Agreement shall be owned by Client upon full payment.
+
+6. TERMINATION
+--------------
+a) Either party may terminate this Agreement for material breach if the breach remains uncured for thirty (30) days after written notice.
+b) Either party may terminate immediately if the other party becomes insolvent or files for bankruptcy.
+c) Client may terminate for convenience upon ninety (90) days written notice, subject to payment of a termination fee equal to three (3) months of the then-current Monthly Service Fee.
+d) Upon termination, Provider shall return all Client data within thirty (30) days in a mutually agreed format.
+e) Sections 4 (Confidentiality), 5 (Intellectual Property), 8 (Limitation of Liability), and 9 (Indemnification) shall survive termination.
+
+7. SERVICE LEVEL AGREEMENT
+--------------------------
+a) Uptime Guarantee: 99.9% platform availability, measured monthly.
+b) If uptime falls below 99.9% but above 99.0%, Client receives a 10% service credit.
+c) If uptime falls below 99.0%, Client receives a 25% service credit.
+d) Scheduled maintenance (not to exceed 4 hours per month) is excluded from uptime calculations.
+e) Critical incident response time: 15 minutes.
+f) Resolution time for critical incidents: 4 hours.
+
+8. LIMITATION OF LIABILITY
+--------------------------
+a) Neither party shall be liable for indirect, incidental, special, or consequential damages.
+b) Each party's total liability under this Agreement shall not exceed the total fees paid by Client during the twelve (12) months preceding the claim.
+c) These limitations shall apply regardless of the theory of liability.
+
+9. INDEMNIFICATION
+------------------
+a) Provider shall indemnify Client against claims arising from Provider's infringement of third-party intellectual property rights.
+b) Client shall indemnify Provider against claims arising from Client's use of the services in violation of applicable law.
+c) The indemnified party must promptly notify the indemnifying party of any claim and cooperate in the defense.
+
+10. GOVERNING LAW
+-----------------
+This Agreement shall be governed by and construed in accordance with the laws of the State of Delaware, without regard to its conflict of laws principles. Any disputes arising under this Agreement shall be resolved exclusively in the state or federal courts located in San Francisco County, California.
+
+11. INSURANCE
+-------------
+Provider shall maintain throughout the term of this Agreement:
+a) Commercial General Liability: $2,000,000 per occurrence
+b) Professional Liability/Errors & Omissions: $1,000,000 per claim
+c) Cyber Liability Insurance: $2,000,000 per occurrence
+
+12. ENTIRE AGREEMENT
+--------------------
+This Agreement constitutes the entire agreement between the parties regarding the subject matter and supersedes all prior agreements, whether written or oral. Any amendments must be in writing signed by both parties.
+
+IN WITNESS WHEREOF, the parties have executed this Agreement as of the date first written above.
+
+CLOUDMATRIX TECHNOLOGIES INC.        DATASTREAM LOGISTICS LLC
+
+By: Maria Rodriguez                   By: Thomas Whitfield
+Title: VP of Operations               Title: Chief Operating Officer
+Email: mrodriguez@cloudmatrix.io      Email: twhitfield@datastreamlogistics.com
+Phone: (415) 555-0142                 Phone: (214) 555-0189

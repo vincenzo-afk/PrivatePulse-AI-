@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-base: 10 11 15;
+    --bg-surface: 17 19 24;
+    --bg-elevated: 22 25 32;
+    --border: 30 32 40;
+    --accent: 0 212 170;
+    --accent-secondary: 99 102 241;
+    --text-primary: 240 242 245;
+    --text-secondary: 139 145 158;
+    --text-muted: 75 81 96;
+    --danger: 239 68 68;
+    --warning: 245 158 11;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-base text-text-primary antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    background-color: rgba(0, 212, 170, 0.2);
+    color: rgb(240 242 245);
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgb(var(--text-muted) / 0.3);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(var(--text-muted) / 0.5);
+  }
+}
+
+@layer components {
+  .card-base {
+    @apply bg-surface border border-border rounded-xl;
+  }
+
+  .btn-primary {
+    @apply bg-accent text-black font-semibold hover:opacity-90 transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:outline-none;
+  }
+
+  .btn-ghost {
+    @apply border border-border text-text-secondary hover:text-text-primary
+           hover:border-accent/30 transition-all duration-200
+           focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:outline-none;
+  }
+
+  .btn-danger {
+    @apply bg-danger/10 text-danger border border-danger/20 hover:bg-danger/20
+           transition-all duration-200 focus-visible:ring-2 focus-visible:ring-danger/50;
+  }
+
+  .input-base {
+    @apply bg-elevated border border-border rounded-lg px-4 py-2.5 text-text-primary
+           placeholder:text-text-muted focus:outline-none focus:border-accent/50
+           focus:ring-1 focus:ring-accent/30 transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-pending {
+    @apply badge bg-text-muted/20 text-text-muted;
+  }
+
+  .badge-processing {
+    @apply badge bg-warning/20 text-warning animate-pulse-slow;
+  }
+
+  .badge-ready {
+    @apply badge bg-accent/15 text-accent;
+  }
+
+  .badge-error {
+    @apply badge bg-danger/15 text-danger;
+  }
+
+  .skeleton {
+    @apply animate-pulse bg-elevated rounded-lg;
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(0, 212, 170, 0.15);
+  }
+
+  .glow-accent-lg {
+    box-shadow: 0 0 40px rgba(0, 212, 170, 0.2);
+  }
+}
