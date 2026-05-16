@@ -29,7 +29,6 @@ export const EVENT_TYPE_COLORS: Record<string, string> = {
   "query.received": "warning",
   "retrieval.executed": "accent-secondary",
   "answer.generated": "accent",
-  "demo.loaded": "accent",
 };
 
 export const EVENT_BADGE_STYLES: Record<string, string> = {

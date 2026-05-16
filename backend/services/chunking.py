@@ -2,7 +2,7 @@
 
 import uuid
 from dataclasses import dataclass, field
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from services.extraction import ExtractedDocument
 
 
@@ -14,6 +14,7 @@ SEPARATORS = ["\n\n", "\n", ". ", " ", ""]
 @dataclass
 class DocumentChunk:
     """A single chunk of text from a document."""
+
     chunk_id: str
     document_id: str
     text: str
@@ -24,7 +25,9 @@ class DocumentChunk:
     chunk_index: int
 
 
-def chunk_document(extracted: ExtractedDocument, document_id: str) -> list[DocumentChunk]:
+def chunk_document(
+    extracted: ExtractedDocument, document_id: str
+) -> list[DocumentChunk]:
     """Split extracted text into overlapping chunks with page mapping.
 
     Uses LangChain RecursiveCharacterTextSplitter.

@@ -14,6 +14,7 @@ logger = get_logger(__name__)
 
 class AuditEventType(str, Enum):
     """Enum of all audit event types."""
+
     DOCUMENT_UPLOADED = "document.uploaded"
     DOCUMENT_EXTRACTED = "document.extracted"
     DOCUMENT_CHUNKED = "document.chunked"
@@ -22,7 +23,6 @@ class AuditEventType(str, Enum):
     QUERY_RECEIVED = "query.received"
     RETRIEVAL_EXECUTED = "retrieval.executed"
     ANSWER_GENERATED = "answer.generated"
-    DEMO_LOADED = "demo.loaded"
 
 
 async def log_event(
@@ -44,7 +44,7 @@ async def log_event(
         event_type=event_type.value,
         description=description,
         document_id=document_id,
-        metadata=json.dumps(metadata) if metadata else None,
+        extra=json.dumps(metadata) if metadata else None,
     )
 
     if db_session:

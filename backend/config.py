@@ -9,7 +9,14 @@ class Settings(BaseSettings):
 
     # API Keys
     groq_api_key: Optional[str] = None
+
+    # Embedding provider: "ollama" or "openai"
+    embedding_provider: str = "ollama"
     openai_api_key: Optional[str] = None
+
+    # Ollama settings (used when embedding_provider="ollama")
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_embedding_model: str = "nomic-embed-text"
 
     # Groq LLM settings
     groq_model: str = "llama-3.2-90b-vision-preview"
@@ -34,7 +41,7 @@ class Settings(BaseSettings):
     chunk_overlap: int = 100
     min_relevance_score: float = 0.30
 
-    # Model settings
+    # Model settings (used when embedding_provider="openai")
     embedding_model: str = "text-embedding-3-small"
 
     # Server
@@ -54,7 +61,11 @@ class Settings(BaseSettings):
     def cors_origins_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",")]
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "case_sensitive": False}
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": False,
+    }
 
 
 settings = Settings()

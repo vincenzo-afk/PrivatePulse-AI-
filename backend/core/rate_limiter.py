@@ -44,7 +44,11 @@ class SlidingWindowRateLimiter:
             current_count = len(self._windows[key])
 
             if current_count >= self.max_requests:
-                retry_after = int(timestamps[0] + self.window_seconds - now) if timestamps else self.window_seconds
+                retry_after = (
+                    int(timestamps[0] + self.window_seconds - now)
+                    if timestamps
+                    else self.window_seconds
+                )
                 return False, current_count, self.max_requests, retry_after
 
             self._windows[key].append(now)
@@ -82,13 +86,17 @@ async def rate_limit_middleware(request: Request, call_next: Callable):
     # Determine which rate limiter to use based on path
     if "/api/v1/chat/query" in path:
         limiter = query_rate_limiter
-    elif any(p in path for p in ["/api/v1/documents/upload", "/api/v1/demo/load"]):
+    elif any(p in path for p in ["/api/v1/documents/upload"]):
         limiter = general_rate_limiter
     else:
         return await call_next(request)
 
     # Get client key: prefer session_id from header, fall back to IP
-    client_key = request.headers.get("X-Session-ID") or request.client.host if request.client else "unknown"
+    client_key = (
+        request.headers.get("X-Session-ID") or request.client.host
+        if request.client
+        else "unknown"
+    )
 
     allowed, count, limit, retry_after = await limiter.check(client_key)
 
@@ -106,7 +114,11 @@ async def rate_limit_middleware(request: Request, call_next: Callable):
                 "error": {
                     "code": "RATE_LIMIT_EXCEEDED",
                     "message": f"Too many requests. Please wait {retry_after} seconds before trying again.",
-                    "detail": {"retry_after_seconds": retry_after, "limit": limit, "current": count},
+                    "detail": {
+                        "retry_after_seconds": retry_after,
+                        "limit": limit,
+                        "current": count,
+                    },
                 }
             },
             headers={"Retry-After": str(retry_after)},

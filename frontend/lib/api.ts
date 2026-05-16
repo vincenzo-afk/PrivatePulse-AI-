@@ -91,17 +91,6 @@ export const chatApi = {
   },
 };
 
-// Demo API
-export const demoApi = {
-  load: async (sessionId: string, demoSet?: string): Promise<{ documents: Document[] }> => {
-    const { data } = await client.post("/demo/load", {
-      session_id: sessionId,
-      demo_set: demoSet || "all",
-    });
-    return data;
-  },
-};
-
 // Audit API
 export const auditApi = {
   getEvents: async (

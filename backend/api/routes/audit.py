@@ -44,21 +44,23 @@ async def get_audit_events(
     event_schemas = []
     for event in events:
         metadata = None
-        if event.metadata:
+        if event.extra:
             try:
-                metadata = json.loads(event.metadata)
+                metadata = json.loads(event.extra)
             except (json.JSONDecodeError, TypeError):
                 metadata = None
 
-        event_schemas.append(AuditEventSchema(
-            id=event.id,
-            session_id=event.session_id,
-            event_type=event.event_type,
-            description=event.description,
-            document_id=event.document_id,
-            metadata=metadata,
-            created_at=event.created_at.isoformat(),
-        ))
+        event_schemas.append(
+            AuditEventSchema(
+                id=event.id,
+                session_id=event.session_id,
+                event_type=event.event_type,
+                description=event.description,
+                document_id=event.document_id,
+                metadata=metadata,
+                created_at=event.created_at.isoformat(),
+            )
+        )
 
     return AuditEventsResponse(
         events=event_schemas,

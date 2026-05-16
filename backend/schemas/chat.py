@@ -87,10 +87,3 @@ class SuggestedQuestionsResponse(BaseModel):
     """Response for suggested questions."""
 
     questions: list[str]
-
-
-class DemoLoadRequest(BaseModel):
-    """Request for loading demo documents."""
-
-    session_id: str
-    demo_set: str = "all"

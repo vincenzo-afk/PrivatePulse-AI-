@@ -22,7 +22,6 @@ const EVENT_TYPES = [
   "query.received",
   "retrieval.executed",
   "answer.generated",
-  "demo.loaded",
 ];
 
 function AuditEntry({ event }: { event: AuditEvent }) {

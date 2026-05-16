@@ -1,7 +1,7 @@
 """Pydantic request/response schemas for documents."""
 
 from datetime import datetime
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, field_serializer
 from typing import Optional
 
 
@@ -21,6 +21,20 @@ class DocumentSchema(BaseModel):
     error_message: Optional[str] = None
 
     model_config = {"from_attributes": True}
+
+    @field_validator("uploaded_at", mode="before")
+    @classmethod
+    def convert_uploaded_at(cls, v):
+        if isinstance(v, datetime):
+            return v.isoformat()
+        return v
+
+    @field_validator("processed_at", mode="before")
+    @classmethod
+    def convert_processed_at(cls, v):
+        if isinstance(v, datetime):
+            return v.isoformat()
+        return v
 
 
 class DocumentStatusSchema(BaseModel):

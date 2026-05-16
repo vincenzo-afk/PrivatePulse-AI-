@@ -11,30 +11,17 @@ import {
   ArrowRight,
   Lock,
   Database,
-  Brain,
   CheckCircle2,
   XCircle,
 } from "lucide-react";
 import { TopBar } from "@/components/layout/TopBar";
-import { useAppStore } from "@/lib/store";
-import { demoApi } from "@/lib/api";
 import { APP_NAME } from "@/lib/constants";
 
 export default function LandingPage() {
   const router = useRouter();
-  const sessionId = useAppStore((s) => s.sessionId);
-  const addDocument = useAppStore((s) => s.addDocument);
 
-  const handleStartDemo = async () => {
-    if (!sessionId) return;
-    try {
-      const result = await demoApi.load(sessionId, "all");
-      result.documents.forEach((doc) => addDocument(doc));
-      router.push("/chat");
-    } catch {
-      console.warn("Demo load failed, navigating to chat anyway");
-      router.push("/chat");
-    }
+  const handleGetStarted = () => {
+    router.push("/dashboard");
   };
 
   const handleUpload = () => {
@@ -62,10 +49,10 @@ export default function LandingPage() {
               Upload Your Own
             </button>
             <button
-              onClick={handleStartDemo}
+              onClick={handleGetStarted}
               className="btn-primary rounded-lg px-5 py-2 text-sm"
             >
-              Start Demo
+              Get Started
             </button>
           </div>
         }
@@ -114,11 +101,11 @@ export default function LandingPage() {
             className="mt-10 flex flex-col sm:flex-row gap-4 justify-center"
           >
             <button
-              onClick={handleStartDemo}
+              onClick={handleGetStarted}
               className="btn-primary rounded-xl px-8 py-3.5 text-base inline-flex items-center gap-2 glow-accent"
             >
               <FileText className="h-5 w-5" />
-              Start with Demo Documents
+              Get Started
               <ArrowRight className="h-5 w-5" />
             </button>
             <button
