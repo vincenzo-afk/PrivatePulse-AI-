@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ScrollText, Download, ChevronDown, ChevronRight, Clock } from "lucide-react";
+import { ClipboardList, Download, ChevronDown, ChevronRight, Clock } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorState } from "@/components/shared/ErrorState";
@@ -113,8 +113,8 @@ export default function AuditPage() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <ScrollText className="h-5 w-5 text-accent" />
-              <h1 className="text-2xl font-bold text-text-primary">Audit Trail</h1>
+              <ClipboardList className="h-5 w-5 text-accent" />
+              <h1 className="text-2xl font-bold text-text-primary">Audit Log</h1>
             </div>
             <p className="text-sm text-text-secondary">
               Complete log of every operation performed on your documents

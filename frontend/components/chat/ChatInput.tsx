@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect, KeyboardEvent, useCallback } from "react";
-import { Send, Sparkles, Loader2, ImagePlus, X } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Send, Loader2, ImagePlus, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChatInputProps {
@@ -23,11 +23,10 @@ export function ChatInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const maxChars = 1000;
+  const maxChars = 2000;
   const charsLeft = maxChars - value.length;
-  const isNearLimit = charsLeft < 50;
+  const isNearLimit = charsLeft < 100;
 
-  // Auto-resize textarea
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -37,13 +36,10 @@ export function ChatInput({
     }
   }, [value]);
 
-  // Generate preview URLs when images change, cleanup old ones
   useEffect(() => {
     const newUrls = attachedImages.map((img) => URL.createObjectURL(img));
-    // Revoke previous URLs
     previewUrls.forEach((url) => URL.revokeObjectURL(url));
     setPreviewUrls(newUrls);
-    // Cleanup on unmount
     return () => {
       newUrls.forEach((url) => URL.revokeObjectURL(url));
     };
@@ -53,23 +49,18 @@ export function ChatInput({
     if (e.target.files) {
       const files = Array.from(e.target.files);
       if (attachedImages.length + files.length > 5) {
-        // Max 5 images per Groq vision limit
         setAttachedImages((prev) => prev.slice(0, 5));
         return;
       }
       setAttachedImages((prev) => [...prev, ...files].slice(0, 5));
     }
-    // Reset input so same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   }, [attachedImages.length]);
 
   const removeImage = useCallback((index: number) => {
-    setAttachedImages((prev) => {
-      const newImages = prev.filter((_, i) => i !== index);
-      return newImages;
-    });
+    setAttachedImages((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   const handleSubmit = useCallback(() => {
@@ -79,13 +70,12 @@ export function ChatInput({
     onSend(trimmed, attachedImages.length > 0 ? attachedImages : undefined);
     setValue("");
     setAttachedImages([]);
-    // Reset height
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
     }
   }, [value, attachedImages, disabled, isGenerating, onSend]);
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
@@ -95,10 +85,36 @@ export function ChatInput({
   const hasContent = value.trim().length > 0 || attachedImages.length > 0;
 
   return (
-    <div className="border-t border-border bg-surface/95 backdrop-blur-sm px-4 py-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="relative flex items-end gap-2">
-          <div className="flex-1 relative">
+    <div className="border-t border-border bg-surface p-4">
+      <div className="max-w-3xl mx-auto">
+        <div 
+          className={cn(
+            "bg-surface border border-border rounded-xl transition-all",
+            "focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/30"
+          )}
+        >
+          <div className="flex items-end gap-2 p-3">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              type="button"
+              disabled={disabled || isGenerating}
+              className={cn(
+                "flex-shrink-0 p-2 rounded-lg text-text-muted hover:text-text-secondary hover:bg-elevated transition-colors",
+                (disabled || isGenerating) && "opacity-50 cursor-not-allowed"
+              )}
+              title="Attach images (max 5)"
+            >
+              <ImagePlus className="h-5 w-5" />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={handleImageSelect}
+            />
+
             <textarea
               ref={textareaRef}
               value={value}
@@ -111,102 +127,58 @@ export function ChatInput({
               placeholder={placeholder}
               disabled={disabled || isGenerating}
               rows={1}
-              className={cn(
-                "w-full resize-none rounded-xl border bg-elevated px-4 py-3 pr-12 text-sm text-text-primary placeholder:text-text-muted",
-                "border-border focus:border-accent/50 focus:ring-1 focus:ring-accent/30",
-                "transition-all duration-200 outline-none",
-                (disabled || isGenerating) && "opacity-50 cursor-not-allowed"
-              )}
+              className="flex-1 resize-none bg-transparent text-text-primary placeholder:text-text-muted outline-none text-sm min-h-[24px] max-h-[144px]"
             />
-            {isNearLimit && value.length > 0 && (
-              <span className="absolute right-3 bottom-3 text-xs text-warning">
-                {charsLeft}
-              </span>
-            )}
+
+            <button
+              onClick={handleSubmit}
+              disabled={!hasContent || disabled || isGenerating}
+              className={cn(
+                "flex-shrink-0 flex items-center justify-center rounded-xl p-2.5 transition-all duration-200",
+                hasContent && !disabled && !isGenerating
+                  ? "bg-accent text-black hover:opacity-90"
+                  : "bg-elevated text-text-muted cursor-not-allowed"
+              )}
+            >
+              {isGenerating ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </button>
           </div>
 
-          <button
-            onClick={handleSubmit}
-            disabled={!hasContent || disabled || isGenerating}
-            className={cn(
-              "flex items-center justify-center rounded-xl p-3 transition-all duration-200 flex-shrink-0",
-              hasContent && !disabled && !isGenerating
-                ? "bg-accent text-black hover:opacity-90 glow-accent"
-                : "bg-elevated text-text-muted cursor-not-allowed"
-            )}
-          >
-            {isGenerating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-          </button>
+          {attachedImages.length > 0 && (
+            <div className="flex items-center gap-2 px-3 pb-3 flex-wrap">
+              {attachedImages.map((img, i) => (
+                <div key={`${img.name}-${i}`} className="relative group">
+                  <img
+                    src={previewUrls[i]}
+                    alt={`Attachment ${i + 1}`}
+                    className="w-12 h-12 object-cover rounded-lg border border-border"
+                  />
+                  <button
+                    onClick={() => removeImage(i)}
+                    className="absolute -top-1.5 -right-1.5 bg-danger text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    type="button"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Image attachment previews */}
-        {attachedImages.length > 0 && (
-          <div className="flex items-center gap-2 mt-2 flex-wrap">
-            {attachedImages.map((img, i) => (
-              <div key={`${img.name}-${i}`} className="relative group">
-                <img
-                  src={previewUrls[i]}
-                  alt={`Attachment ${i + 1}`}
-                  className="w-14 h-14 object-cover rounded-lg border border-border"
-                />
-                <button
-                  onClick={() => removeImage(i)}
-                  className="absolute -top-1.5 -right-1.5 bg-danger text-white rounded-full w-5 h-5 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  type="button"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-                <span className="absolute bottom-0.5 right-1 text-[10px] bg-black/60 text-white px-1 rounded">
-                  {img.name.split(".").pop()?.toUpperCase()}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Controls row */}
         <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-2">
-            {/* Image attach button */}
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              type="button"
-              disabled={disabled || isGenerating}
-              className={cn(
-                "flex items-center gap-1.5 text-xs text-text-muted hover:text-text-secondary transition-colors",
-                (disabled || isGenerating) && "opacity-50 cursor-not-allowed"
-              )}
-              title="Attach images (max 5)"
-            >
-              <ImagePlus className="h-4 w-4" />
-              <span className="hidden sm:inline">Image</span>
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={handleImageSelect}
-            />
-
-            {attachedImages.length > 0 && (
-              <span className="text-xs text-text-muted">
-                {attachedImages.length}/5 images
-              </span>
-            )}
+          <div className="flex items-center gap-2 text-xs text-text-muted">
+            <span>Enter to send</span>
+            <span className="text-border">•</span>
+            <span>Shift + Enter for new line</span>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-3 w-3 text-text-muted" />
-            <p className="text-xs text-text-muted">
-              Press <kbd className="px-1 py-0.5 rounded bg-elevated border border-border text-text-secondary font-mono text-[10px]">Enter</kbd> to send
-            </p>
-          </div>
+          {isNearLimit && value.length > 0 && (
+            <span className="text-xs text-warning">{charsLeft} chars left</span>
+          )}
         </div>
       </div>
     </div>

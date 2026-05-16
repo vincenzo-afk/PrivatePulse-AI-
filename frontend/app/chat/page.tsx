@@ -1,22 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Shield, ChevronDown, FileText } from "lucide-react";
+import { Shield, ChevronDown, FileText, Upload } from "lucide-react";
 import { useState, useMemo } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { ChatWindow } from "@/components/chat/ChatWindow";
 import { ChatInput } from "@/components/chat/ChatInput";
-import { SourcesPanel } from "@/components/chat/SourcesPanel";
 import { useChat } from "@/lib/hooks/useChat";
 import { useDocuments } from "@/lib/hooks/useDocuments";
 import { useSession } from "@/lib/hooks/useSession";
 import { useAppStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { DropZone } from "@/components/upload/DropZone";
+import { toast } from "sonner";
 
 export default function ChatPage() {
   const router = useRouter();
   useSession();
-  const { documents } = useDocuments();
+  const { documents, upload, isUploading } = useDocuments();
   const {
     messages,
     sendMessage,
@@ -25,13 +26,11 @@ export default function ChatPage() {
     clearMessages,
   } = useChat();
 
-  const sourcePanelOpen = useAppStore((s) => s.sourcePanelOpen);
-  const currentSources = useAppStore((s) => s.currentSources);
-  const closeSourcePanel = useAppStore((s) => s.closeSourcePanel);
   const activeDocumentIds = useAppStore((s) => s.activeDocumentIds);
   const setActiveDocumentIds = useAppStore((s) => s.setActiveDocumentIds);
 
   const [showDocSelector, setShowDocSelector] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
 
   const readyDocs = documents.filter((d) => d.status === "ready");
   const hasDocuments = readyDocs.length > 0;
@@ -47,8 +46,17 @@ export default function ChatPage() {
     return `${activeDocumentIds.length} documents`;
   }, [activeDocumentIds, readyDocs]);
 
+  const handleUpload = async (files: File[]) => {
+    try {
+      await upload(files);
+      toast.success(`Uploading ${files.length} file${files.length > 1 ? "s" : ""}...`);
+      setShowUpload(false);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error?.message || "Upload failed");
+    }
+  };
+
   const handleRetry = () => {
-    // Re-send the last user message
     const lastUserMessage = [...messages].reverse().find((m) => m.role === "user");
     if (lastUserMessage) {
       sendMessage(lastUserMessage.content);
@@ -56,19 +64,11 @@ export default function ChatPage() {
   };
 
   return (
-    <AppShell
-      rightPanel={
-        sourcePanelOpen && currentSources.length > 0 ? (
-          <SourcesPanel sources={currentSources} onClose={closeSourcePanel} />
-        ) : undefined
-      }
-    >
+    <AppShell>
       <div className="flex flex-col h-full">
-        {/* Chat header */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-border bg-surface/80 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-border bg-surface/80 backdrop-blur-sm">
           <div className="flex items-center gap-3">
             <h1 className="text-sm font-semibold text-text-primary">Chat</h1>
-            {/* Document selector */}
             {hasDocuments && (
               <div className="relative">
                 <button
@@ -129,52 +129,50 @@ export default function ChatPage() {
             )}
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Privacy badge */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => setShowUpload(!showUpload)}
+              className={cn(
+                "flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs transition-colors",
+                showUpload
+                  ? "bg-accent/10 text-accent border border-accent/30"
+                  : "text-text-secondary hover:text-text-primary hover:bg-elevated border border-transparent"
+              )}
+            >
+              <Upload className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Upload</span>
+            </button>
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 border border-accent/20">
               <Shield className="h-3 w-3 text-accent" />
-              <span className="text-[11px] text-accent font-medium">Private</span>
+              <span className="text-[11px] text-accent font-medium hidden sm:inline">Private</span>
             </div>
             {messages.length > 0 && (
               <button
                 onClick={clearMessages}
-                className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+                className="text-xs text-text-muted hover:text-text-secondary transition-colors hidden sm:block"
               >
-                Clear chat
+                Clear
               </button>
             )}
           </div>
         </div>
 
-        {/* Chat window */}
-        {hasDocuments ? (
-          <>
-            <ChatWindow
-              messages={messages}
-              isGenerating={isGenerating}
-              suggestedQuestions={suggestedQuestions}
-              onSendQuestion={sendMessage}
-              onRetry={handleRetry}
-            />
-            <ChatInput onSend={sendMessage} disabled={isGenerating} />
-          </>
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
-            <FileText className="h-12 w-12 text-text-muted" />
-            <div className="text-center">
-              <h3 className="text-base font-semibold text-text-primary">No documents ready</h3>
-              <p className="text-sm text-text-secondary mt-1">
-                Upload documents first to start asking questions.
-              </p>
+        {showUpload && (
+          <div className="border-b border-border p-4 bg-surface/50">
+            <div className="max-w-lg mx-auto">
+              <DropZone onFilesSelected={handleUpload} disabled={isUploading} />
             </div>
-            <button
-              onClick={() => router.push("/dashboard")}
-              className="btn-primary rounded-lg px-5 py-2.5 text-sm"
-            >
-              Upload Documents
-            </button>
           </div>
         )}
+
+        <ChatWindow
+          messages={messages}
+          isGenerating={isGenerating}
+          suggestedQuestions={suggestedQuestions}
+          onSendQuestion={sendMessage}
+          onRetry={handleRetry}
+        />
+        <ChatInput onSend={sendMessage} disabled={isGenerating} />
       </div>
     </AppShell>
   );

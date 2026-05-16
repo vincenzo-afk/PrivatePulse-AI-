@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     top_k_retrieval: int = 5
     chunk_size: int = 800
     chunk_overlap: int = 100
-    min_relevance_score: float = 0.30
+    min_relevance_score: float = 0.55
 
     # Model settings (used when embedding_provider="openai")
     embedding_model: str = "text-embedding-3-small"

@@ -111,24 +111,9 @@ async def chat_query(
         },
     )
 
-    # Handle no-context case (no chunks AND no images)
-    if not retrieved_chunks and not image_urls:
-        processing_time = int((time.time() - start_time) * 1000)
-        return QueryResponse(
-            answer="I couldn't find any relevant information in your documents to answer this question.",
-            citations=[],
-            sources=[],
-            model_used="none",
-            tokens_used={"input": 0, "output": 0},
-            processing_time_ms=processing_time,
-            privacy_summary=PrivacySummary(
-                chunks_retrieved=0,
-                documents_accessed=[],
-                raw_files_sent=False,
-            ),
-        )
-
     # Generate answer (with optional images for vision)
+    # This will now always call the LLM, allowing for greetings and general conversation
+    # even when no document context is found.
     generated = await generate_answer(
         question=question,
         chunks=retrieved_chunks,
@@ -146,6 +131,27 @@ async def chat_query(
         },
     )
 
+    # Filter chunks based on what the LLM actually used
+    used_indices = sorted(list(set(generated.citations)))
+    # Filter out-of-bounds indices just in case
+    used_indices = [i for i in used_indices if 1 <= i <= len(retrieved_chunks)]
+    
+    # Map old 1-based indices to new 1-based indices
+    index_map = {old_idx: new_idx + 1 for new_idx, old_idx in enumerate(used_indices)}
+    
+    # Replace citations in text
+    import re
+    def replace_citation(match):
+        old_idx = int(match.group(1))
+        if old_idx in index_map:
+            return f"[{index_map[old_idx]}]"
+        # If it cited something that doesn't exist, remove the citation marker
+        return ""
+    
+    final_answer = re.sub(r'\[(\d+)\]', replace_citation, generated.text)
+    
+    final_chunks = [retrieved_chunks[i - 1] for i in used_indices]
+
     # Build citations with masked previews
     citations = [
         Citation(
@@ -158,7 +164,7 @@ async def chat_query(
             relevance_score=round(c.relevance_score, 3),
             text_preview=mask_text_short(c.text[:200]),
         )
-        for c in retrieved_chunks
+        for c in final_chunks
     ]
 
     sources = [
@@ -172,13 +178,13 @@ async def chat_query(
             relevance_score=round(c.relevance_score, 3),
             chunk_index=c.chunk_index,
         )
-        for c in retrieved_chunks
+        for c in final_chunks
     ]
 
     processing_time = int((time.time() - start_time) * 1000)
 
     return QueryResponse(
-        answer=generated.text,
+        answer=final_answer,
         citations=citations,
         sources=sources,
         model_used=generated.model_used,

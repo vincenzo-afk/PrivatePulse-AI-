@@ -12,12 +12,12 @@ export const ALLOWED_FILE_TYPES = {
 export const ALLOWED_EXTENSIONS = ["pdf", "txt", "docx"];
 
 export const SESSION_STORAGE_KEY = "privatepulse_session_id";
+export const SETTINGS_STORAGE_KEY = "privatepulse_settings";
 
 export const NAV_ITEMS = [
-  { label: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
   { label: "Chat", href: "/chat", icon: "MessageSquare" },
-  { label: "Privacy", href: "/privacy", icon: "Shield" },
-  { label: "Audit Trail", href: "/audit", icon: "ScrollText" },
+  { label: "Audit Log", href: "/audit", icon: "ClipboardList" },
+  { label: "Settings", href: "/settings", icon: "Settings" },
 ] as const;
 
 export const EVENT_TYPE_COLORS: Record<string, string> = {
@@ -38,3 +38,10 @@ export const EVENT_BADGE_STYLES: Record<string, string> = {
   warning: "border-warning/20 bg-warning/10 text-warning",
   "text-muted": "border-text-muted/20 bg-text-muted/10 text-text-muted",
 };
+
+export const DEFAULT_SUGGESTED_QUESTIONS = [
+  "Summarize my documents",
+  "What are the key findings?",
+  "Find all dates mentioned",
+  "Compare the documents",
+];

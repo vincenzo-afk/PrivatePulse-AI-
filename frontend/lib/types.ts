@@ -1,4 +1,3 @@
-// Document types
 export interface Document {
   id: string;
   session_id: string;
@@ -20,15 +19,15 @@ export interface DocumentStatus {
   error_message?: string;
 }
 
-// Chat types
 export interface ChatMessage {
   id: string;
   role: "user" | "assistant" | "system" | "error";
   content: string;
+  images?: string[];
   citations?: Citation[];
   sources?: SourceChunk[];
   privacy_summary?: PrivacySummary;
-  created_at?: string;
+  created_at: string;
 }
 
 export interface Citation {
@@ -76,7 +75,6 @@ export interface QueryResponse {
   privacy_summary: PrivacySummary;
 }
 
-// Audit types
 export interface AuditEvent {
   id: string;
   session_id: string;
@@ -93,7 +91,6 @@ export interface AuditEventsResponse {
   page: number;
 }
 
-// Session types
 export interface Session {
   id: string;
   created_at: string;
@@ -101,3 +98,26 @@ export interface Session {
   document_count: number;
   query_count: number;
 }
+
+export interface Settings {
+  apiKey: string;
+  model: "llama-3.2-90b-vision-preview" | "llama-3.2-11b-vision-preview";
+  fontSize: "sm" | "md" | "lg";
+}
+
+export const DEFAULT_SETTINGS: Settings = {
+  apiKey: "",
+  model: "llama-3.2-90b-vision-preview",
+  fontSize: "md",
+};
+
+export const AVAILABLE_MODELS = [
+  { value: "llama-3.2-90b-vision-preview", label: "Llama 3.2 90B Vision" },
+  { value: "llama-3.2-11b-vision-preview", label: "Llama 3.2 11B Vision" },
+] as const;
+
+export const FONT_SIZE_OPTIONS = [
+  { value: "sm", label: "Small" },
+  { value: "md", label: "Medium" },
+  { value: "lg", label: "Large" },
+] as const;

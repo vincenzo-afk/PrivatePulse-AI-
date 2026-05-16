@@ -72,7 +72,7 @@ export function SourcesPanel({ sources, onClose }: SourcesPanelProps) {
         </div>
         <button
           onClick={onClose}
-          className="text-text-muted hover:text-text-secondary transition-colors"
+          className="text-text-muted hover:text-text-secondary transition-colors p-1"
         >
           <X className="h-4 w-4" />
         </button>

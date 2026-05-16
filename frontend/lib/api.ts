@@ -16,28 +16,37 @@ const client = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
-// Attach session ID to every request
 client.interceptors.request.use((config) => {
   const sessionId = useAppStore.getState().sessionId;
   if (sessionId) {
     config.headers["X-Session-ID"] = sessionId;
   }
+  const settings = useAppStore.getState().settings;
+  if (settings.apiKey) {
+    config.headers["X-Groq-Api-Key"] = settings.apiKey;
+  }
   return config;
 });
 
-// Standard error handling
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error.response?.data?.error?.message || "An unexpected error occurred";
-    if (error.response?.status !== 404) {
-      toast.error(message);
+    if (error.response?.status === 413) {
+      toast.error("File too large. Please reduce file sizes.");
+    } else if (error.response?.status === 429) {
+      toast.error("Rate limit exceeded. Please wait a moment.");
+    } else if (error.response?.status === 500) {
+      toast.error("Server error. Please try again.");
+    } else {
+      const message = error.response?.data?.error?.message || "An unexpected error occurred";
+      if (error.response?.status !== 404) {
+        toast.error(message);
+      }
     }
     return Promise.reject(error);
   }
 );
 
-// Documents API
 export const documentsApi = {
   upload: async (files: File[], sessionId: string): Promise<{ documents: Document[] }> => {
     const formData = new FormData();
@@ -69,7 +78,6 @@ export const documentsApi = {
   },
 };
 
-// Chat API
 export const chatApi = {
   query: async (formData: FormData): Promise<QueryResponse> => {
     const { data } = await client.post("/chat/query", formData, {
@@ -89,9 +97,12 @@ export const chatApi = {
     const { data } = await client.get(`/chat/sessions/${sessionId}`);
     return data;
   },
+
+  deleteSession: async (sessionId: string): Promise<void> => {
+    await client.delete(`/chat/sessions/${sessionId}`);
+  },
 };
 
-// Audit API
 export const auditApi = {
   getEvents: async (
     sessionId: string,
@@ -110,7 +121,6 @@ export const auditApi = {
   },
 };
 
-// Health API
 export const healthApi = {
   check: async (): Promise<{ status: string; version: string; uptime_seconds: number; llm_provider: string; llm_model: string; vision_enabled: boolean }> => {
     const { data } = await client.get("/health");

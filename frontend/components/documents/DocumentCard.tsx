@@ -77,15 +77,15 @@ export function DocumentCard({ document, onDelete }: DocumentCardProps) {
 
       <ConfirmDialog
         open={showDeleteConfirm}
+        onOpenChange={(open) => !open && setShowDeleteConfirm(false)}
         title="Delete Document"
-        message={`Are you sure you want to delete "${document.file_name}"? This will permanently remove the document and all its indexed chunks.`}
+        description={`Are you sure you want to delete "${document.file_name}"? This will permanently remove the document and all its indexed chunks.`}
         confirmLabel="Delete"
         variant="danger"
         onConfirm={() => {
           onDelete(document.id);
           setShowDeleteConfirm(false);
         }}
-        onCancel={() => setShowDeleteConfirm(false)}
       />
     </>
   );

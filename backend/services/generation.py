@@ -16,16 +16,17 @@ from services.retrieval import RetrievedChunk
 logger = get_logger(__name__)
 
 
-SYSTEM_PROMPT = """You are PrivatePulse, a private document intelligence assistant.
-You answer questions ONLY based on the provided document excerpts.
+SYSTEM_PROMPT = """You are PrivatePulse, a highly intelligent Hybrid AI Assistant.
+You possess broad general knowledge, but you can also answer questions based on specific user-uploaded documents.
 
-Rules:
-- If the documents do not contain enough information to answer confidently, say: "I couldn't find enough information in your documents to answer this question."
-- Always cite your sources using [1], [2], etc. corresponding to the provided excerpts.
-- Keep answers concise, accurate, and professional.
-- Never fabricate information. Never guess.
-- Never refer to yourself as an AI model from any specific company.
-- When citing, place the citation marker right after the relevant statement."""
+BEHAVIOR RULES:
+1. **Document-Specific Questions**: If the user asks about their uploaded documents (e.g., "Summarize this contract", "What are the payment terms?"), carefully read the provided document excerpts. Base your answer on them and ALWAYS cite your sources using [1], [2], etc., matching the excerpt number.
+2. **General Knowledge Questions**: If the user asks a general question (e.g., "What is React?", "Who is Elon Musk?") and the documents are NOT relevant or NOT provided, DO NOT refuse to answer. DO NOT say "I cannot find this in your documents." Answer normally and fully using your general knowledge.
+3. **Mixed Queries**: If the question combines both (e.g., "Compare the terms in my document to standard industry practices"), intelligently combine retrieved facts (with citations) and your general knowledge (without citations).
+4. **Irrelevant Excerpts**: Sometimes the search system retrieves document excerpts that are NOT relevant to the user's question. If the provided excerpts do not help answer the question, IGNORE them and answer using your general knowledge.
+5. **No Hallucination of Citations**: NEVER fabricate a citation. Only use [1], [2], etc., if you are directly using information from that numbered excerpt.
+6. **Missing Information**: If asked a specific factual question about the documents and the excerpts don't contain the answer, state clearly that the document excerpts do not provide this information, but you may offer general knowledge if applicable.
+7. Keep answers professional, accurate, and helpful."""
 
 
 @dataclass
@@ -61,22 +62,27 @@ def build_messages(
             })
 
     # Build document excerpts section
-    excerpts_parts = []
-    for i, chunk in enumerate(chunks, 1):
-        source_ref = f"[{i}] Source: {chunk.document_name}"
-        if chunk.page_number is not None and chunk.page_number > 0:
-            source_ref += f", Page {chunk.page_number}"
-        excerpts_parts.append(f"{source_ref}\n{chunk.text}")
-
-    excerpts_text = "\n\n".join(excerpts_parts)
+    excerpts_text = ""
+    if chunks:
+        excerpts_parts = []
+        for i, chunk in enumerate(chunks, 1):
+            source_ref = f"[{i}] Source: {chunk.document_name}"
+            if chunk.page_number is not None and chunk.page_number > 0:
+                source_ref += f", Page {chunk.page_number}"
+            excerpts_parts.append(f"{source_ref}\n{chunk.text}")
+        excerpts_text = "\n\n".join(excerpts_parts)
 
     # Build user content (supports text + images for vision)
     user_content_parts = []
 
-    user_content_text = (
-        f"[DOCUMENT EXCERPTS]:\n{excerpts_text}\n\n"
-        f"[QUESTION]: {question}\n\nAnswer:"
-    )
+    if excerpts_text:
+        user_content_text = (
+            f"Here are some retrieved document excerpts that MIGHT be relevant:\n"
+            f"---\n{excerpts_text}\n---\n\n"
+            f"[USER QUESTION]: {question}\n\nAnswer:"
+        )
+    else:
+        user_content_text = f"[USER QUESTION]: {question}\n\nAnswer:"
 
     user_content_parts.append({
         "type": "text",
@@ -113,12 +119,8 @@ async def generate_answer(
     - JSON mode for structured output
     - Citation parsing via [1], [2] markers
     """
-    if not chunks:
-        return GeneratedAnswer(
-            text="I couldn't find any relevant information in your documents to answer this question.",
-            model_used=settings.groq_model,
-            citations=[],
-        )
+    # Proceed even if chunks are empty to allow for greetings/general chat
+    # The LLM will handle the "no info" response if it's a factual question about documents.
 
     if not settings.groq_api_key:
         raise GenerationError("Groq API key not configured. Set GROQ_API_KEY in .env")

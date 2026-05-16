@@ -3,15 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
   MessageSquare,
-  Shield,
-  ScrollText,
+  ClipboardList,
+  Settings,
   X,
   ShieldCheck,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_ITEMS, APP_NAME } from "@/lib/constants";
+import { useAppStore } from "@/lib/store";
 
 interface SidebarProps {
   open: boolean;
@@ -19,18 +21,17 @@ interface SidebarProps {
 }
 
 const iconMap: Record<string, React.ElementType> = {
-  LayoutDashboard,
   MessageSquare,
-  Shield,
-  ScrollText,
+  ClipboardList,
+  Settings,
 };
 
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { sidebarOpen, toggleSidebar } = useAppStore();
 
   return (
     <>
-      {/* Mobile backdrop */}
       {open && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -40,19 +41,22 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 border-r border-border bg-surface flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static lg:z-auto",
-          open ? "translate-x-0" : "-translate-x-full"
+          "fixed top-0 left-0 z-50 h-full border-r border-border bg-surface flex flex-col transition-all duration-300",
+          "w-16 lg:w-16",
+          sidebarOpen && "w-60",
+          open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         )}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="rounded-lg bg-accent/15 p-1.5">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+          <Link href="/chat" className="flex items-center gap-2.5">
+            <div className="rounded-lg bg-accent/15 p-1.5 flex-shrink-0">
               <ShieldCheck className="h-5 w-5 text-accent" />
             </div>
-            <span className="font-semibold text-text-primary text-sm">
-              {APP_NAME}
-            </span>
+            {sidebarOpen && (
+              <span className="font-semibold text-text-primary text-sm">
+                {APP_NAME}
+              </span>
+            )}
           </Link>
           <button
             onClick={onClose}
@@ -62,7 +66,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1">
           {NAV_ITEMS.map((item) => {
             const Icon = iconMap[item.icon];
@@ -76,25 +79,44 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-accent/10 text-accent border border-accent/20"
-                    : "text-text-secondary hover:text-text-primary hover:bg-elevated border border-transparent"
+                    ? "bg-accent/10 text-accent border-r-2 border-accent"
+                    : "text-text-secondary hover:text-text-primary hover:bg-elevated border-r-2 border-transparent"
                 )}
               >
                 <Icon className="h-4 w-4 flex-shrink-0" />
-                {item.label}
+                {sidebarOpen && <span className="truncate">{item.label}</span>}
               </Link>
             );
           })}
         </nav>
 
-        {/* Footer */}
-        <div className="px-5 py-4 border-t border-border">
-          <p className="text-xs text-text-muted">
-            &copy; 2024 {APP_NAME}
-          </p>
-          <p className="text-xs text-text-muted mt-0.5">
-            Privacy-first document intelligence
-          </p>
+        <div className="hidden lg:block px-4 py-4 border-t border-border">
+          <button
+            onClick={toggleSidebar}
+            className="w-full flex items-center justify-center gap-2 text-xs text-text-muted hover:text-text-secondary transition-colors"
+          >
+            {sidebarOpen ? (
+              <>
+                <ChevronLeft className="h-3.5 w-3.5" />
+                Collapse
+              </>
+            ) : (
+              <>
+                <ChevronRight className="h-3.5 w-3.5" />
+              </>
+            )}
+          </button>
+          <div className="text-center mt-2">
+            <p className="text-xs text-text-muted">&copy; 2025 {APP_NAME}</p>
+            <p className="text-xs text-text-muted">Confidential Computing</p>
+          </div>
+        </div>
+
+        <div className="lg:hidden px-4 py-4 border-t border-border">
+          <div className="text-center">
+            <p className="text-xs text-text-muted">&copy; 2025 {APP_NAME}</p>
+            <p className="text-xs text-text-muted">Confidential Computing</p>
+          </div>
         </div>
       </aside>
     </>

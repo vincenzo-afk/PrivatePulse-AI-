@@ -6,11 +6,12 @@ import { useAppStore } from "@/lib/store";
 
 function SessionInitializer({ children }: { children: React.ReactNode }) {
   const initSession = useAppStore((s) => s.initSession);
-  const sessionId = useAppStore((s) => s.sessionId);
+  const loadSettings = useAppStore((s) => s.loadSettings);
 
   useEffect(() => {
     initSession();
-  }, [initSession]);
+    loadSettings();
+  }, [initSession, loadSettings]);
 
   return <>{children}</>;
 }

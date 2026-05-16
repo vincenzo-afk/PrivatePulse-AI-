@@ -1,21 +1,20 @@
 import { create } from "zustand";
-import type { Document, ChatMessage, SourceChunk } from "./types";
-import { SESSION_STORAGE_KEY } from "./constants";
+import type { Document, ChatMessage, SourceChunk, Settings } from "./types";
+import { SESSION_STORAGE_KEY, SETTINGS_STORAGE_KEY } from "./constants";
+import { DEFAULT_SETTINGS } from "./types";
 
 interface AppStore {
-  // Session
   sessionId: string | null;
   setSessionId: (id: string) => void;
   initSession: () => void;
+  clearSession: () => void;
 
-  // Documents
   documents: Document[];
   setDocuments: (docs: Document[]) => void;
   addDocument: (doc: Document) => void;
   updateDocument: (id: string, update: Partial<Document>) => void;
   removeDocument: (id: string) => void;
 
-  // Chat
   activeDocumentIds: string[];
   setActiveDocumentIds: (ids: string[]) => void;
   messages: ChatMessage[];
@@ -24,19 +23,22 @@ interface AppStore {
   isGenerating: boolean;
   setIsGenerating: (v: boolean) => void;
 
-  // Sources panel
   sourcePanelOpen: boolean;
   currentSources: SourceChunk[];
   openSourcePanel: (sources: SourceChunk[]) => void;
   closeSourcePanel: () => void;
 
-  // UI
+  settings: Settings;
+  setSettings: (settings: Settings) => void;
+  loadSettings: () => void;
+  updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
+
   sidebarOpen: boolean;
   toggleSidebar: () => void;
+  setSidebarOpen: (open: boolean) => void;
 }
 
 export const useAppStore = create<AppStore>((set, get) => ({
-  // Session
   sessionId: null,
   setSessionId: (id: string) => {
     try { localStorage.setItem(SESSION_STORAGE_KEY, id); } catch {}
@@ -51,8 +53,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
     }
     set({ sessionId: id });
   },
+  clearSession: () => {
+    try { localStorage.removeItem(SESSION_STORAGE_KEY); } catch {}
+    set({ sessionId: null, messages: [], documents: [] });
+  },
 
-  // Documents
   documents: [],
   setDocuments: (docs) => set({ documents: docs }),
   addDocument: (doc) => set((state) => ({ documents: [...state.documents, doc] })),
@@ -65,7 +70,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
       documents: state.documents.filter((d) => d.id !== id),
     })),
 
-  // Chat
   activeDocumentIds: [],
   setActiveDocumentIds: (ids) => set({ activeDocumentIds: ids }),
   messages: [],
@@ -74,13 +78,32 @@ export const useAppStore = create<AppStore>((set, get) => ({
   isGenerating: false,
   setIsGenerating: (v) => set({ isGenerating: v }),
 
-  // Sources panel
   sourcePanelOpen: false,
   currentSources: [],
   openSourcePanel: (sources) => set({ sourcePanelOpen: true, currentSources: sources }),
   closeSourcePanel: () => set({ sourcePanelOpen: false, currentSources: [] }),
 
-  // UI
+  settings: DEFAULT_SETTINGS,
+  setSettings: (settings: Settings) => {
+    try { localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings)); } catch {}
+    set({ settings });
+  },
+  loadSettings: () => {
+    try {
+      const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored) as Settings;
+        set({ settings: { ...DEFAULT_SETTINGS, ...parsed } });
+      }
+    } catch {}
+  },
+  updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => {
+    const newSettings = { ...get().settings, [key]: value };
+    try { localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(newSettings)); } catch {}
+    set({ settings: newSettings });
+  },
+
   sidebarOpen: true,
   toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+  setSidebarOpen: (open) => set({ sidebarOpen: open }),
 }));

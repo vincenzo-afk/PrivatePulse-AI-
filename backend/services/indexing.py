@@ -29,7 +29,7 @@ def get_or_create_collection(session_id: str, embedding_function=None) -> chroma
     name = collection_name(session_id)
     try:
         return client.get_collection(name)
-    except ValueError:
+    except (ValueError, Exception):
         return client.create_collection(
             name=name,
             metadata={"session_id": session_id},
