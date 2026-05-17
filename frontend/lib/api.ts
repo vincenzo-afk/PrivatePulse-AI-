@@ -25,6 +25,9 @@ client.interceptors.request.use((config) => {
   if (settings.apiKey) {
     config.headers["X-Groq-Api-Key"] = settings.apiKey;
   }
+  if (settings.model) {
+    config.headers["X-Groq-Model"] = settings.model;
+  }
   return config;
 });
 

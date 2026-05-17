@@ -54,7 +54,7 @@ export default function SettingsPage() {
   };
 
   const handleModelChange = (value: string) => {
-    updateSetting("model", value as "llama-3.2-90b-vision-preview" | "llama-3.2-11b-vision-preview");
+    updateSetting("model", value as "llama-3.3-70b-versatile" | "llama-3.1-8b-instant");
   };
 
   const handleFontSizeChange = (value: string) => {
@@ -219,7 +219,7 @@ export default function SettingsPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-text-muted">Build</span>
-                <span className="text-text-secondary">2025.05</span>
+                <span className="text-text-secondary">2026.05</span>
               </div>
             </div>
           </section>

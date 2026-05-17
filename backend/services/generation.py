@@ -107,6 +107,8 @@ async def generate_answer(
     chunks: list[RetrievedChunk],
     conversation_history: Optional[list[MessageSchema]] = None,
     image_urls: Optional[list[str]] = None,
+    api_key: Optional[str] = None,
+    model_override: Optional[str] = None,
 ) -> GeneratedAnswer:
     """Generate an answer using Groq API (llama-3.2-90b-vision-preview).
 
@@ -122,9 +124,13 @@ async def generate_answer(
     # Proceed even if chunks are empty to allow for greetings/general chat
     # The LLM will handle the "no info" response if it's a factual question about documents.
 
-    if not settings.groq_api_key:
-        raise GenerationError("Groq API key not configured. Set GROQ_API_KEY in .env")
+    groq_key = api_key or settings.groq_api_key
+    if not groq_key or groq_key == "your-groq-api-key-here":
+        raise GenerationError(
+            "Groq API key not configured. Set GROQ_API_KEY in .env or enter it in settings."
+        )
 
+    model_to_use = model_override or settings.groq_model
     messages = build_messages(question, chunks, conversation_history, image_urls)
 
     try:
@@ -132,11 +138,11 @@ async def generate_answer(
             response = await client.post(
                 settings.groq_api_url,
                 headers={
-                    "Authorization": f"Bearer {settings.groq_api_key}",
+                    "Authorization": f"Bearer {groq_key}",
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": settings.groq_model,
+                    "model": model_to_use,
                     "messages": messages,
                     "temperature": settings.groq_temperature,
                     "max_completion_tokens": settings.groq_max_tokens,
@@ -179,7 +185,7 @@ async def generate_answer(
 
     logger.info(
         "answer_generated",
-        model=settings.groq_model,
+        model=model_to_use,
         input_tokens=token_usage["input"],
         output_tokens=token_usage["output"],
         citations=len(citations),
@@ -189,7 +195,7 @@ async def generate_answer(
     return GeneratedAnswer(
         text=answer_text,
         citations=citations,
-        model_used=settings.groq_model,
+        model_used=model_to_use,
         tokens_used=token_usage,
         raw_response=data,
     )

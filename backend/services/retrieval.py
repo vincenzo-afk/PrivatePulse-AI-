@@ -37,11 +37,16 @@ async def retrieve(
     3. Filter results below MIN_RELEVANCE_SCORE.
     4. Return up to TOP_K ranked results.
     """
-    # Embed query
-    query_embedding = await embed_query(query)
-
     # Get Chroma collection
     collection = get_or_create_collection(session_id)
+    
+    # Check if collection is empty - avoid embedding if no documents exist
+    if collection.count() == 0:
+        logger.info("retrieval_skipped_empty_collection", session_id=session_id)
+        return []
+
+    # Embed query
+    query_embedding = await embed_query(query)
 
     # Build filter if document_ids provided
     where_filter = None
@@ -99,6 +104,55 @@ async def retrieve(
 
         if len(retrieved) >= settings.top_k_retrieval:
             break
+
+    if not retrieved:
+        # Fallback: If no chunks pass the similarity threshold, but there are documents,
+        # retrieve the first chunks of those documents directly so the user can ask high-level queries/summaries!
+        target_doc_ids = document_ids
+        if not target_doc_ids and db_session:
+            try:
+                docs = db_session.query(Document).filter(Document.session_id == session_id).all()
+                target_doc_ids = [d.id for d in docs]
+            except Exception:
+                pass
+        
+        # Build where filter if target_doc_ids exist
+        fallback_where = None
+        if target_doc_ids and len(target_doc_ids) > 0:
+            fallback_where = {"document_id": {"$in": target_doc_ids}} if len(target_doc_ids) > 1 else {"document_id": target_doc_ids[0]}
+            
+        logger.info("retrieval_threshold_fallback_fetching_chunks", fallback_where=fallback_where)
+        try:
+            # Query Chroma directly for chunks
+            fallback_results = collection.get(
+                where=fallback_where,
+                limit=settings.top_k_retrieval,
+                include=["metadatas"]
+            )
+            if fallback_results["ids"]:
+                # Build doc name map for fallback if not already done
+                if not doc_name_map and db_session and target_doc_ids:
+                    try:
+                        docs = db_session.query(Document).filter(Document.id.in_(target_doc_ids)).all()
+                        doc_name_map = {doc.id: doc.file_name for doc in docs}
+                    except Exception:
+                        pass
+                
+                for i, chunk_id in enumerate(fallback_results["ids"]):
+                    metadata = fallback_results["metadatas"][i]
+                    doc_id = metadata.get("document_id", "")
+                    doc_name = doc_name_map.get(doc_id, metadata.get("document_name", doc_id[:8] if doc_id else "Unknown"))
+                    retrieved.append(RetrievedChunk(
+                        chunk_id=chunk_id,
+                        document_id=doc_id,
+                        document_name=doc_name,
+                        text=metadata.get("text", ""),
+                        page_number=metadata.get("page_number") if metadata.get("page_number") != -1 else None,
+                        relevance_score=1.0,  # perfect fallback score
+                        chunk_index=metadata.get("chunk_index", 0),
+                    ))
+        except Exception as fallback_err:
+            logger.error("fallback_retrieval_failed", error=str(fallback_err))
 
     logger.info(
         "retrieval_complete",

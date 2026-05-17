@@ -93,6 +93,15 @@ export const useAppStore = create<AppStore>((set, get) => ({
       const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored) as Settings;
+        
+        // Ensure stored model is still supported, fallback to default if decommissioned
+        const { AVAILABLE_MODELS } = require('./types');
+        const isValidModel = AVAILABLE_MODELS.some((m: any) => m.value === parsed.model);
+        if (!isValidModel && parsed.model) {
+            parsed.model = DEFAULT_SETTINGS.model;
+            localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify({ ...DEFAULT_SETTINGS, ...parsed }));
+        }
+        
         set({ settings: { ...DEFAULT_SETTINGS, ...parsed } });
       }
     } catch {}

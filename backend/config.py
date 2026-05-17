@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     ollama_embedding_model: str = "nomic-embed-text"
 
     # Groq LLM settings
-    groq_model: str = "llama-3.2-90b-vision-preview"
+    groq_model: str = "llama-3.3-70b-versatile"
     groq_api_url: str = "https://api.groq.com/openai/v1/chat/completions"
     groq_max_tokens: int = 4096
     groq_temperature: float = 0.3

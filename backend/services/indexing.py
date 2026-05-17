@@ -32,7 +32,7 @@ def get_or_create_collection(session_id: str, embedding_function=None) -> chroma
     except (ValueError, Exception):
         return client.create_collection(
             name=name,
-            metadata={"session_id": session_id},
+            metadata={"session_id": session_id, "hnsw:space": "cosine"},
         )
 
 

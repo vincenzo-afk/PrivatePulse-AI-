@@ -2,9 +2,9 @@
 
 import uuid
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, UploadFile, File, Depends, BackgroundTasks, Query
-from sqlmodel import Session as DBSession
+from sqlmodel import Session as DBSession, select
 from config import settings
 from models.database import get_session
 from models.document import Document, DocumentChunk
@@ -119,7 +119,7 @@ async def process_document_background(
                 doc.chunk_count = len(chunks)
                 doc.page_count = extracted.page_count
                 doc.char_count = extracted.char_count
-                doc.processed_at = datetime.utcnow()
+                doc.processed_at = datetime.now(timezone.utc)
                 db.add(doc)
                 db.commit()
 
@@ -179,7 +179,7 @@ async def upload_documents(
             file_size=len(content),
             file_type=ext,
             status="pending",
-            uploaded_at=datetime.utcnow(),
+            uploaded_at=datetime.now(timezone.utc),
         )
         db.add(doc)
         db.commit()
@@ -191,7 +191,7 @@ async def upload_documents(
             db.add(UserSession(id=session_id))
         else:
             existing_session.document_count += 1
-            existing_session.last_active_at = datetime.utcnow()
+            existing_session.last_active_at = datetime.now(timezone.utc)
         db.commit()
 
         await log_event(
@@ -218,9 +218,9 @@ async def list_documents(
     db: DBSession = Depends(get_session),
 ):
     """List all documents for a session."""
-    docs = db.query(Document).filter(
+    docs = db.exec(select(Document).where(
         Document.session_id == session_id
-    ).order_by(Document.uploaded_at.desc()).all()
+    ).order_by(Document.uploaded_at.desc())).all()
 
     return DocumentListResponse(
         documents=[DocumentSchema.model_validate(d) for d in docs]
@@ -274,7 +274,8 @@ async def delete_document(
     delete_document_chunks(session_id, document_id)
 
     # Delete chunks from SQLite
-    db.query(DocumentChunk).filter(DocumentChunk.document_id == document_id).delete()
+    from sqlmodel import delete as sql_delete
+    db.exec(sql_delete(DocumentChunk).where(DocumentChunk.document_id == document_id))
 
     # Delete file from disk
     try:

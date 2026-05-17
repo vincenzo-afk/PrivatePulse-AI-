@@ -48,16 +48,16 @@ async def _embed_with_ollama(texts: list[str]) -> list[list[float]]:
             try:
                 async with httpx.AsyncClient(timeout=60.0) as client:
                     response = await client.post(
-                        f"{settings.ollama_base_url}/api/embeddings",
+                        f"{settings.ollama_base_url}/api/embed",
                         json={
                             "model": settings.ollama_embedding_model,
-                            "prompt": "\n\n".join(batch),
+                            "input": batch,
                         },
                     )
                     response.raise_for_status()
                     data = response.json()
-                    embedding = data.get("embedding", [])
-                    all_embeddings.append(embedding)
+                    embeddings = data.get("embeddings", [])
+                    all_embeddings.extend(embeddings)
                     break
             except Exception as e:
                 retries += 1
@@ -87,15 +87,18 @@ async def _embed_single_ollama(query: str) -> list[float]:
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
-                f"{settings.ollama_base_url}/api/embeddings",
+                f"{settings.ollama_base_url}/api/embed",
                 json={
                     "model": settings.ollama_embedding_model,
-                    "prompt": query,
+                    "input": [query],
                 },
             )
             response.raise_for_status()
             data = response.json()
-            return data.get("embedding", [])
+            embeddings = data.get("embeddings", [])
+            if embeddings:
+                return embeddings[0]
+            return []
     except Exception as e:
         raise EmbeddingError(f"Failed to embed query with Ollama: {e}")
 

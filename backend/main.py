@@ -86,8 +86,9 @@ async def privatepulse_error_handler(request: Request, exc: PrivatePulseError):
         "INVALID_FILE_TYPE": 400,
         "FILE_TOO_LARGE": 400,
         "SESSION_NOT_FOUND": 404,
-        "EMBEDDING_FAILED": 500,
-        "GENERATION_FAILED": 500,
+        "EMBEDDING_FAILED": 400,
+        "GENERATION_FAILED": 400,
+        "GROQ_API_ERROR": 400,
     }
     status = status_codes.get(exc.code, 500)
     return JSONResponse(
@@ -130,3 +131,4 @@ async def root():
         "version": settings.version,
         "docs": "/docs",
     }
+# Uvicorn reload trigger for updated .env settings & embedding methods

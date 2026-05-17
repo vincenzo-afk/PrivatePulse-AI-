@@ -62,11 +62,12 @@ export function useChat() {
 
       setIsGenerating(false);
     },
-    onError: () => {
+    onError: (error: any) => {
+      const message = error.response?.data?.error?.message || "Failed to generate an answer. Please try again.";
       const errorMessage: ChatMessage = {
         id: `msg-${Date.now()}`,
         role: "error",
-        content: "Failed to generate an answer. Please try again.",
+        content: message,
         created_at: new Date().toISOString(),
       };
       addMessage(errorMessage);

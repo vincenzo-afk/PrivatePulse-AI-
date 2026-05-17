@@ -106,15 +106,17 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               </>
             )}
           </button>
-          <div className="text-center mt-2">
-            <p className="text-xs text-text-muted">&copy; 2025 {APP_NAME}</p>
-            <p className="text-xs text-text-muted">Confidential Computing</p>
-          </div>
+          {sidebarOpen && (
+            <div className="text-center mt-2">
+              <p className="text-xs text-text-muted">&copy; 2026 {APP_NAME}</p>
+              <p className="text-xs text-text-muted">Confidential Computing</p>
+            </div>
+          )}
         </div>
 
         <div className="lg:hidden px-4 py-4 border-t border-border">
           <div className="text-center">
-            <p className="text-xs text-text-muted">&copy; 2025 {APP_NAME}</p>
+            <p className="text-xs text-text-muted">&copy; 2026 {APP_NAME}</p>
             <p className="text-xs text-text-muted">Confidential Computing</p>
           </div>
         </div>

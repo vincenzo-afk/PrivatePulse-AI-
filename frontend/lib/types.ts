@@ -101,19 +101,19 @@ export interface Session {
 
 export interface Settings {
   apiKey: string;
-  model: "llama-3.2-90b-vision-preview" | "llama-3.2-11b-vision-preview";
+  model: "llama-3.3-70b-versatile" | "llama-3.1-8b-instant";
   fontSize: "sm" | "md" | "lg";
 }
 
 export const DEFAULT_SETTINGS: Settings = {
   apiKey: "",
-  model: "llama-3.2-90b-vision-preview",
+  model: "llama-3.3-70b-versatile",
   fontSize: "md",
 };
 
 export const AVAILABLE_MODELS = [
-  { value: "llama-3.2-90b-vision-preview", label: "Llama 3.2 90B Vision" },
-  { value: "llama-3.2-11b-vision-preview", label: "Llama 3.2 11B Vision" },
+  { value: "llama-3.3-70b-versatile", label: "Llama 3.3 70B (Versatile)" },
+  { value: "llama-3.1-8b-instant", label: "Llama 3.1 8B (Instant)" },
 ] as const;
 
 export const FONT_SIZE_OPTIONS = [

@@ -94,12 +94,16 @@ async def chat_query(
         db.commit()
 
     # Retrieve relevant chunks
-    retrieved_chunks = await retrieve(
-        session_id=session_id,
-        query=question,
-        document_ids=doc_ids,
-        db_session=db,
-    )
+    try:
+        retrieved_chunks = await retrieve(
+            session_id=session_id,
+            query=question,
+            document_ids=doc_ids,
+            db_session=db,
+        )
+    except Exception as e:
+        logger.warning("retrieval_failed_fallback_to_direct_llm", error=str(e))
+        retrieved_chunks = []
 
     # Log retrieval
     await log_event(
@@ -114,11 +118,16 @@ async def chat_query(
     # Generate answer (with optional images for vision)
     # This will now always call the LLM, allowing for greetings and general conversation
     # even when no document context is found.
+    api_key = request.headers.get("X-Groq-Api-Key")
+    model_override = request.headers.get("X-Groq-Model")
+
     generated = await generate_answer(
         question=question,
         chunks=retrieved_chunks,
         conversation_history=history,
         image_urls=image_urls,
+        api_key=api_key,
+        model_override=model_override,
     )
 
     # Log answer generated
